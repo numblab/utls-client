@@ -7,7 +7,7 @@ import (
 	"golang.org/x/net/http2"
 )
 
-func NewClient() *http.Client {
+func New() *http.Client {
 	return &http.Client{
 		Transport: &uTransport{
 			H1: &http.Transport{},
