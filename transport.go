@@ -16,6 +16,7 @@ const UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (
 type uTransport struct {
 	H1 *http.Transport
 	H2 *http2.Transport
+	*option
 }
 
 func headers(req *http.Request) {
@@ -68,7 +69,11 @@ func (u *uTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	}
 
 	// TCP connection
-	conn, err := net.DialTimeout("tcp", fmt.Sprintf("%s:%s", req.URL.Hostname(), port), 10*time.Second)
+	tcpAddr := fmt.Sprintf("%s:%s", req.URL.Hostname(), port)
+	if addr, ok := u.hosts[tcpAddr]; ok {
+		tcpAddr = addr
+	}
+	conn, err := net.DialTimeout("tcp", tcpAddr, 10*time.Second)
 	if err != nil {
 		return nil, fmt.Errorf("net.DialTimeout error: %+v", err)
 	}
