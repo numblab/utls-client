@@ -6,7 +6,7 @@ import (
 )
 
 func TestClient(t *testing.T) {
-	resp, _ := New().Get("https://ascii2d.net/")
+	resp, _ := New().Get("https://core-api.prod.blur.io/")
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
 		panic(resp.StatusCode)
