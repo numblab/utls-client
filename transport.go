@@ -11,7 +11,7 @@ import (
 	"golang.org/x/net/http2"
 )
 
-const UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36"
+var ua = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36"
 
 type uTransport struct {
 	H1 *http.Transport
@@ -20,7 +20,10 @@ type uTransport struct {
 }
 
 func headers(req *http.Request) {
-	req.Header.Set("user-agent", UA)
+	if ua == "" {
+		return
+	}
+	req.Header.Set("user-agent", ua)
 }
 
 func (*uTransport) newSpec() *tls.ClientHelloSpec {
@@ -48,7 +51,7 @@ func (*uTransport) newSpec() *tls.ClientHelloSpec {
 		},
 		Extensions: []tls.TLSExtension{
 			&tls.UtlsGREASEExtension{},
-			&tls.PSKKeyExchangeModesExtension{[]uint8{
+			&tls.PSKKeyExchangeModesExtension{Modes: []uint8{
 				tls.PskModeDHE,
 			}},
 			&tls.SNIExtension{},
@@ -63,13 +66,13 @@ func (*uTransport) newSpec() *tls.ClientHelloSpec {
 				tls.PSSWithSHA512,
 				tls.PKCS1WithSHA512,
 			}},
-			&tls.SupportedVersionsExtension{[]uint16{
+			&tls.SupportedVersionsExtension{Versions: []uint16{
 				tls.GREASE_PLACEHOLDER,
 				tls.VersionTLS13,
 				tls.VersionTLS12,
 			}},
 			&tls.ALPSExtension{SupportedProtocols: []string{"h2"}},
-			&tls.SupportedCurvesExtension{[]tls.CurveID{
+			&tls.SupportedCurvesExtension{Curves: []tls.CurveID{
 				tls.CurveID(tls.GREASE_PLACEHOLDER),
 				tls.X25519,
 				tls.CurveP256,
@@ -78,12 +81,12 @@ func (*uTransport) newSpec() *tls.ClientHelloSpec {
 			&tls.UtlsExtendedMasterSecretExtension{},
 
 			&tls.SessionTicketExtension{},
-			&tls.UtlsCompressCertExtension{[]tls.CertCompressionAlgo{
+			&tls.UtlsCompressCertExtension{Algorithms: []tls.CertCompressionAlgo{
 				tls.CertCompressionBrotli,
 			}},
 			&tls.SCTExtension{},
 			&tls.StatusRequestExtension{},
-			&tls.KeyShareExtension{[]tls.KeyShare{
+			&tls.KeyShareExtension{KeyShares: []tls.KeyShare{
 				{Group: tls.CurveID(tls.GREASE_PLACEHOLDER), Data: []byte{0}},
 				{Group: tls.X25519},
 			}},
