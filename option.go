@@ -12,8 +12,8 @@ func WithHost(host map[string]string) OptionFn {
 	}
 }
 
-func WithUserAgent(_ua string) OptionFn {
+func WithUserAgent(ua string) OptionFn {
 	return func(o *option) {
-		ua = _ua
+		defaultUserAgent = ua
 	}
 }

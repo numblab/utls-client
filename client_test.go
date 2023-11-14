@@ -1,6 +1,7 @@
 package client
 
 import (
+	"io"
 	"net/http"
 	"testing"
 )
@@ -24,4 +25,14 @@ func TestClientWithHost(t *testing.T) {
 	if resp.StatusCode != http.StatusOK {
 		panic(resp.StatusCode)
 	}
+}
+
+func TestWithUserAgent(t *testing.T) {
+	resp, err := New(WithUserAgent("test")).Get("https://tls.peet.ws/api/all")
+	if err != nil {
+		t.Errorf("error: %v", err)
+	}
+	defer resp.Body.Close()
+	body, _ := io.ReadAll(resp.Body)
+	t.Log(string(body))
 }
