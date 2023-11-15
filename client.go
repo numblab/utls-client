@@ -16,7 +16,9 @@ func New(fnList ...OptionFn) *http.Client {
 		Transport: &uTransport{
 			H1: &http.Transport{},
 			H2: &http2.Transport{
-				MaxDecoderHeaderTableSize: 1 << 16,
+				MaxHeaderListSize:         262144,
+				MaxDecoderHeaderTableSize: 65536,
+				MaxEncoderHeaderTableSize: 65536,
 			},
 			option: o,
 		},
